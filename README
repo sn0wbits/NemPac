@@ -1,0 +1,37 @@
+#####     ###                            #########
+######    ###                            ###    ###
+### ###   ###	######   ####     ####   ###     ###   ###         #####
+###  ###  ###	###      #####   #####   ###    ###  ### ###     ##
+###   ### ###	#####	 ### ##### ###   ########   ###   ###   ##
+###    ######	###	 ###	   ###   ###        #########    ##
+###     #####   ######   ###       ###   ###        ###   ###     ######
+
+
+Network Mapping and Packet Capture and Analysis
+--------------------------------------------------------------------------
+
+
+		Table of Content
+	------------------------
+	1. Intro
+
+
+
+
+
+
+
+
+
+
+
+1. Intro
+
+	This AI is meant not as a replacement for IDS/IPS--such as Anomaly based intrusion detection--but rather as an addition to the toolbox. NemPac is made of three modules:
+			1.  Packet Capture Module
+			2.  Network Mapping Module
+			3.  AI Comparison Module
+
+	Using NemPac you can easily monitor for new devices connected to a local network, and abnormal network traffic.
+
+
