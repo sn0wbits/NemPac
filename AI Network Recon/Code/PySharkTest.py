@@ -21,7 +21,8 @@ args.timeout = 1
 #args.debug = 'True'
 
 # Scans for packets
-def scanner(interface):
+# 90% of code is just for debug
+def portScan(interface):
     if (interface and (args.packets or args.timeout)):
         # For numbering packets
         pckNumb = 0
@@ -108,10 +109,24 @@ def scanner(interface):
                     pass
             #### DEBUGGING END ####
 
-# Execute scanner
+def bCastScan(interface):
+
+    if (interface):
+        capture = ps.LiveCapture(interface=interface)
+        capture.sniff(packet_count=int(100))
+
+        for packet in capture:
+            try:
+                if ('ff:ff:ff:ff:ff:ff' in packet.eth.dst):
+                    print('Broadcast found at IP:\t{}'.format(packet.ip.src))
+                    print('MAC:\t {}\nVENDOR:  {}\n'.format(packet.eth.src, tools.vendorScan(packet.eth.src)))
+            except:
+                pass
+# Sees if interface was entered as argument (used in case of multiple connected interfaces)
 if args.interface is None:
     iface = tools.interfaceChecker()
 else:
     iface = args.interface
 
-scanner(iface)
+#portScan(iface)
+bCastScan(iface)

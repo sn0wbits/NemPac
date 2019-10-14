@@ -13,13 +13,15 @@ Network Mapping and Packet Capture Analysis Using Artificial Intelligence
 
 		Table of Content
 	------------------------
-	1. Intro
+	1. 	Intro
+	1.2	The Network Mapper 
 
 
 
 
 
-
+This is a draft of what the end result will be if possible, this README is subject to change as NemPac is not yet complete.
+I highly advise against NemPac in this state.
 
 
 
@@ -27,11 +29,36 @@ Network Mapping and Packet Capture Analysis Using Artificial Intelligence
 
 1. Intro
 
-	This AI is meant not as a replacement for IDS/IPS--such as Anomaly based intrusion detection--but rather as an addition to the toolbox. NemPac is made of three modules:
+	This is meant not as a replacement for IDS/IPS--such as Anomaly based intrusion detection--but rather as an addition to the toolbox. NemPac is made of three modules:
 			1.  Packet Capture Module
 			2.  Network Mapping Module
 			3.  AI Comparison Module
 
-	Using NemPac you can easily monitor for new devices connected to a local network, and abnormal network traffic.
+	Using NemPac you can easily monitor for new devices connected to a local network, look for abnormal network traffic and behaviour.
+	There are two primary ways someone can get access to your network connected devices:
+
+		1) By performing a physical intrusion, either posing as an employee of the same or another company or just simply by finding an open ethernet port or through the
+		wireless network.
+		
+		2) By performing a digital intrusion, gaining access to devices on the internet through various digital means. This can range from Social Engineering to exploiting
+		vulnerabilities on vulnerable devices.
+
+	To help combat these methods NemPac is equipped with both a network mapper, packet capture and analysis and an AI to compare the unknown to the known.
 
 
+1.2 The Network Mapper
+
+	The Network Mappers job is to scan the network through various means to discover all the hosts it can, it then saves this data to a database. If any new hosts are found
+	It will automatically send the new host to the database based on different variables. If it detects a host on IP 10.0.0.5 that has the MAC address of 11:22:33:44:55:66 (host A)
+	and this is stored in the database, then after a day it finds that the host on IP 10.0.0.5 now has the MAC address of 22:33:44:55:66:77 (host B) it will attempt to see if 
+	Host A has a different IP address, if while host B is checked to see if it is a regular on the network and also checking if the vendor is unusual.
+	For example, if NemPac is deployed on the network of a Accountant firm and it is unusual for them to have a Raspberry Pi connected, and host B is shown to be a Raspberry Pi,
+	this will then create an alert.
+
+1.3 The Packet Capture and Analysis
+
+	The Packet Capture is simple, its job is only to capture the packets of devices or whole networks, dependent on the situation and the config. Targeted captures are used if
+	and alert has been added to a device or if it is specified to do so.
+	The Packet Analysis part is the brain of the two. It will analyse packets for unusual traffic, for example packets sent or recieved from a blacklisted IP or port scans,
+	perform detailed analysis of packets from devices with alerts, for example take the Raspberry Pi from the Network Mapper example, as a device with an alert it would be
+	subject to scans on network behaviour and packet contents.
