@@ -29,10 +29,10 @@ I highly advise against NemPac in this state.
 
 1. Intro
 
-	This is meant not as a replacement for IDS/IPS--such as Anomaly based intrusion detection--but rather as an addition to the toolbox. NemPac is made of three modules:
-			1.  Packet Capture Module
-			2.  Network Mapping Module
-			3.  AI Comparison Module
+	This is meant not as a replacement for IDS/IPS--such as Anomaly based intrusion detection--but rather as an addition to the toolbox. NemPac is made of three parts:
+			1.  Packet Capture
+			2.  Network Mapping
+			3.  AI Comparison
 
 	Using NemPac you can easily monitor for new devices connected to a local network, look for abnormal network traffic and behaviour.
 	There are two primary ways someone can get access to your network connected devices:
