@@ -7,12 +7,12 @@
     ###     #####       ######   ###       ###   ###        ###   ###      #######
 
 
-Network Mapping and Packet Capture and Analysis
+# Network Mapping and Packet Capture and Analysis
 --------------------------------------------------------------------------
 
 
-    Table of Content
-    ------------------
+            Table of Content
+   ----------------------------------
     0.......INTRO
     1.......MODULES
      1.0....NETWORK MAPPER
@@ -28,6 +28,7 @@ Network Mapping and Packet Capture and Analysis
  By using the CIDR notation the netmask is generated. By flipping the CIDR notation we can also generate the wildcard, then use this to calculate the IP addresses, used for scanning using the following formulas:
 
 Common CIDR notations:
+```
 	/24 = 11111111 . 11111111 . 11111111 . 00000000
 	        255    .   255    .   255    .    0
 	The wildcard would then be:
@@ -45,4 +46,5 @@ Common CIDR notations:
 	The wildcard would then be:
 	/24 = 00000000 . 11111111 . 11111111 . 11111111
 	         0     .   255    .    255   .   255
+```
 
