@@ -1,23 +1,10 @@
-# Tools for the scripts
 from subprocess import Popen, CalledProcessError, check_output, PIPE
 import csv
+import math
 
-# Identifies which protocol is used
-def protoFinder(protoNumb):
-    if (protoNumb == '1'):
-        return 'ICMP'
-    elif (protoNumb == '4'):
-        return 'IPv4'
-    elif (protoNumb == '6'):
-        return 'TCP'
-    elif (protoNumb == '17'):
-        return 'UDP'
-    elif (protoNumb == '41'):
-        return 'IPv6'
 
-# Checks for used interface, could fail if multiple interfaces is connected
-def interfaceChecker():
-    ifScan = Popen(['ls', '/sys/class/net/'], stdout = PIPE)
+def interface_checker():
+    ifScan = Popen(['ls', '/sys/class/net'], stdout = PIPE)
     ifList = ifScan.communicate()[0].decode('utf-8')
     ifListSplit = ifList.split('\n')
     ifListSplit.pop()
@@ -31,10 +18,9 @@ def interfaceChecker():
                 if not 'tun' in intface and not 'lo' in intface:
                     return intface
         except:
-            pass
+            print('Interface not found')
 
-# Compares input to csv of OUI, if match it returns vendor name
-def vendorScan(MACaddr):
+def vendor_scan(MACaddr):
     macSplit = MACaddr.split(':')
     oui = macSplit[0] + macSplit[1] + macSplit[2]
     with open('oui.csv') as csvfile:
@@ -43,63 +29,37 @@ def vendorScan(MACaddr):
             if oui.upper() == row[0]:
                 return row[1]
 
-# Gathers local info from client
-def getLocalInfo(interface, debug):
-    # Gets local IP for client
-    h1 = Popen(['ifconfig', '-v', interface], stdout = PIPE)
-    h2 = Popen(['sed', '-n', '-e', "s/^.*inet //p"], stdin = h1.stdout, stdout = PIPE)
-    h3 = Popen(['grep', '-v', "127.0.0.1"], stdin = h2.stdout, stdout = PIPE)
-    h4 = Popen(['sed', 's/[netmask].*$//'], stdin = h3.stdout, stdout = PIPE)
-    lhost = h4.communicate()[0].decode('utf-8')
+def get_local_info(interface): # I fucking miss ifconfig
+    ''' Uses CLI commands to grab the local IP with subnet prefix (CIDR) and the MAC address of the NIC.
+    The subnet prefix (CIDR) is a count of the 1 bits in the binary notation, this means we must convert it into
+    dotted decimals to get the subnet mask.
+    '''
+    mac = Popen(['cat', f'/sys/class/net/{interface}/address'], stdout = PIPE).communicate()[0].decode('utf-8').rstrip()
+    get_lhost = Popen(['ip', 'a', 'show', interface], stdout = PIPE)
+    lhost = Popen(['awk', '/inet.*brd/ {print $2}'], stdin = get_lhost.stdout, \
+                  stdout = PIPE).communicate()[0].decode('utf-8')
+    lhost = lhost.split('/')
+    cidr_prefix = lhost[1]
+    lhost = str(lhost.pop(0))
+    bin_netmask = '1' * int(cidr_prefix) + '0' * (32 -int(cidr_prefix))
+    netmask_parts = []
+    scannable_octets = 0
 
-    # Gets netmask for network
-    n1 = Popen(['ifconfig', '-v', interface], stdout = PIPE)
-    n2 = Popen(['sed', '-n', '-e', 's/^.*netmask //p'], stdin = n1.stdout, stdout = PIPE)
-    n3 = Popen(['grep', '-B0', 'broadcast'], stdin = n2.stdout, stdout = PIPE)
-    n4 = Popen(['sed', 's/[broadcast].*$//'], stdin = n3.stdout, stdout = PIPE)
-    netmask = n4.communicate()[0].decode('utf-8')
+    for octet_bit in range(0, len(bin_netmask), 8):
+        bin_octet = bin_netmask[octet_bit:][:8]
+        octet = int(bin_octet, 2)
 
-    # Print if debug
-    if debug:
-        print("lhost:\t\t\u001b[32;1m{}\u001b[0mnetmask:\t\u001b[36;1m{}\u001b[0m".format(lhost, netmask))
+        if octet != 255:
+            scannable_octets += 1
+        netmask_parts.append(str(octet))
+    return lhost, mac, '.'.join(netmask_parts), calculate_hosts(cidr_prefix), cidr_prefix, scannable_octets
 
-    return lhost, netmask
+def calculate_hosts(prefix):
+    hosts = int(math.pow(2, (32 - int(prefix))) - 2)
+    return hosts
 
-# Calculates the scannable IP range
-# Example: lhost = 192.168.0.5 netmask = 255.255.0.0 range = 192.168.0.1 - 192.168.255.254
-# 			excluding 192.168.0.5
-def calculateRange(lhost, netmask, debug):
-    octListHost = lhost.split('.')
-    octListMask = netmask.split('.')
-    scannable = 0
-
-
-    for octet in range(len(octListMask)):
-        if debug:
-            print("octet scanned:\t{}".format(octet))
-
-        if not '255' in octListMask[octet]:
-            scannable += 1
-            counter = 0
-
-            for x in range(int(octListMask[octet]), 256):
-                counter += 1
-                octListMask[octet] = str(counter)
-
-    if (scannable == 1):
-        totalHost = (int(octListMask[3]) - 2)
-
-    elif (scannable == 2):
-        totalHost = (int(octListMask[2]) * int(octListMask[3]) - 2)
-
+def clamp_oct_IP(numb):
+    if numb > 255:
+        return 255
     else:
-        totalHost = (int(octListMask[1]) * int(octListMask[2]) * int(octListMask[3]) - 2)
-
-    # Print if debug
-    if debug:
-        print("Host:\t\u001b[32;1mOct1: {} Oct2: {} Oct3: {} Oct4: {}\u001b[0m\nMask:\t\u001b[36;1mOct1: {} Oct2: {} Oct3: {} Oct4: {}\u001b[0m".format(
-        octListHost[0], octListHost[1], octListHost[2], octListHost[3], octListMask[0], octListMask[1], octListMask[2], octListMask[3]))
-        print("Scannable Octets: {}".format(scannable))
-        print("Scan range: {}.{}.{}.{}\tTotal possible hosts: {}".format(octListMask[0], octListMask[1], octListMask[2], octListMask[3], totalHost))
-
-    return scannable, totalHost
+        return numb
