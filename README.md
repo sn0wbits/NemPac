@@ -1,18 +1,18 @@
-    #####     ###                                #########
-    ######    ###                                ###    ###
-    ### ###   ###	######   ####     ####   ###     ###   ###         #######
-    ###  ###  ###	###      #####   #####   ###    ###  ### ###     ###
-    ###   ### ###	#####	 ### ##### ###   ########   ###   ###   ##
-    ###    ######	###	 ###	   ###   ###        #########    ###
-    ###     #####       ######   ###       ###   ###        ###   ###      #######
+    #####     ###                               #########
+    ######    ###                               ###    ###
+    ### ###   ###    ######    ####     ####    ###     ###     ###         #######
+    ###  ###  ###    ###       #####   #####    ###    ###    ### ###     ###
+    ###   ### ###    #####     ### ##### ###    ########     ###   ###    ##
+    ###    ######    ###       ###       ###    ###          #########    ###
+    ###     #####    ######    ###       ###    ###          ###   ###      #######
 
 
-# Network Mapping and Packet Capture and Analysis
---------------------------------------------------------------------------
+                Network Mapping and Packet Capture and Analysis
+    --------------------------------------------------------------------------
 
 
             Table of Content
-   ----------------------------------
+    --------------------------------
     0.......INTRO
     1.......MODULES
      1.0....NETWORK MAPPER
@@ -21,11 +21,9 @@
  
  
  
- 
- 
 1.0 NETWORK MAPPER
  
- By using the CIDR notation the netmask is generated. By flipping the CIDR notation we can also generate the wildcard, then use this to calculate the IP addresses, used for scanning using the following formulas:
+   By using the CIDR notation the netmask is generated. By flipping the CIDR notation we can also generate the wildcard, then use this to calculate the IP addresses, used for scanning using the following formulas:
 
 Common CIDR notations:
 ```
