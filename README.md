@@ -18,7 +18,3 @@
 	 1.0....NETWORK MAPPER
 	 1.1....PACKET CAPTURE AND ANALYSIS
 	 1.2....AI COMPARISON
-
-	![](https://raw.githubusercontent.com/sn0wbits/NemPac/master/tot_host_eq.gif)
-	[USERNAME]/[REPO]//tot_host_eq.gif
-
