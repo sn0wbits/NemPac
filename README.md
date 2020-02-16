@@ -19,6 +19,6 @@
 	 1.1....PACKET CAPTURE AND ANALYSIS
 	 1.2....AI COMPARISON
 
-	![2^(32-CIDR)](/tot_hosts_eq.gif)
+	![2^(32-CIDR)](tot_hosts_eq.gif)
 
 
