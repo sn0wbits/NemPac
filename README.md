@@ -20,5 +20,5 @@
 	 1.2....AI COMPARISON
 
 	![](https://raw.githubusercontent.com/sn0wbits/NemPac/master/tot_host_eq.gif)
-
+	[USERNAME]/[REPO]//tot_host_eq.gif
 
