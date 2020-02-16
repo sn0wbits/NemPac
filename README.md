@@ -19,6 +19,6 @@
 	 1.1....PACKET CAPTURE AND ANALYSIS
 	 1.2....AI COMPARISON
 
-	![2^(32-CIDR)](tot_host_eq.gif)
+	![](https://raw.githubusercontent.com/sn0wbits/NemPac/master/tot_host_eq.gif)
 
 
