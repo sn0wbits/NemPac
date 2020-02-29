@@ -1,8 +1,3 @@
-#############################################
-# Using PyShark we can capture packets from #
-# an interface, adding filters is also      #
-# possible.                                 #
-#############################################
 import pyshark as ps
 import argparse
 from sqlTools import sqlPorty
@@ -97,7 +92,7 @@ def portScan(interface):
 
                 elif ('True' in args.all):
                     print(packet)
-                
+
                 # For testing SQL stuff
                 try:
                     if ('6' in packet.ip.proto):

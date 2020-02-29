@@ -3,6 +3,7 @@ import argparse
 import socket
 # #import sqlTools import checlSQL -- Implement later
 import tools
+import errno
 import math
 import re
 
@@ -20,15 +21,16 @@ class Scanner:
     def __init__(self):
         self.lhost = None
         self.ip_list = []
+        self.ip_mac_list = []
+        self.ip_connected = []
         self.socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket_tcp.settimeout(.5)
+        self.socket_tcp.settimeout(1)
         self.port_list_tcp = [20, 21, 22, 23, 25, 80, 443] # FTP, SSH, Telnet, SMTP, HTTP, HTTPS
         self.port_list_udp = [60, 520, 1812, 5004, 5060]   # TFTP, RIP, RADIUS, RTP, SIP
-        self.ip_mac_list = []
 
     def gen_IP(self, lhost, prefix, scannable):
-        ''' calculate all usable IP addresses using the CIDR notation,
+        ''' Calculates all usable IP addresses using the CIDR notation,
         this is done by using the formulas 2^(32-CIDR) - 2,
         (256 - 2^(32-CIDR)) / 256 and ((256 - 2^(32-CIDR)) / 256) / 256
         '''
@@ -72,22 +74,43 @@ class Scanner:
             pass
 
     def tcp_scan(self, ip):
+        ''' Scans to see if the host is up using basic TCP scanning techniques.
+        If a host is up but the port is opened it will respond with a SYN,ACK. If
+        the port is closed but the host is up it will respond with a RST,ACK. If
+        the host is down it will not respond at all.
+        '''
+        connection = 0
         for port in self.port_list_tcp:
             try:
+                print(f'Attempting to connect to {ip}:{port}')
                 self.socket_tcp.connect((ip, port))
-                print(f'IP - {ip}\tPORT - {port}\tfound')
+                self.socket_tcp.shutdown(socket.SHUT_RD)
+                connection = 1
+                if connection:
+                    print(f'{ip}:{port} -- ESTABLISHED\tHOST UP!')
+                    connection = 0
+                    break
+            except socket.error as err:
+                if err.errno == errno.ECONNRESET or \
+                  err.errno == errno.ECONNREFUSED or \
+                   err.errno == errno.ECONNABORTED:
+                    print(f'{ip}:{port} -- PORT CLOSED\tHOST UP!')
+                    break
+            except KeyboardInterrupt:
+                exit('\nDetected keyboard interrupt...\n')
             except:
-                #print(f'IP - {ip}\tPORT - {port}\tnot found')
+                #print(f'IP - {ip}\t\tPORT - {port}\tnot found')
                 pass
-            self.socket_tcp.close()
 
     def udp_scan(self, ip):
-        test = input('0')
+        ''' Scans to see if the host is up using UDP scanning. If a host is up
+        and the port is closed it will respond with an ICMP Destination Unreachable message.
+        TODO: Implement packet capture to check for ICMP responses.
+        '''
+        #test = input('0')
         for port in self.port_list_udp:
-            self.socket_udp.sendto(test, (ip, port))
-            while True:
-                data, addr = sock.recvfrom(1024)
-                print(f'Data be - {data}')
+            #print(f'Attempting {ip}:{port}')
+            self.socket_udp.sendto(bytes('0', 'utf-8'), (ip, port))
 
 local_host, mac_address, n_netmask, n_total_hosts, n_prefix, scannable = tools.get_local_info(iface)
 scan = Scanner()
@@ -95,8 +118,9 @@ scan.gen_IP(local_host, n_prefix, scannable)
 scan.remove_lhost(local_host)
 
 for ip in scan.ip_list:
-    scan.ping_scan(ip)
-    scan.tcp_scan(ip)
+    #scan.ping_scan(ip)
+    #scan.tcp_scan(ip)
+    scan.udp_scan(ip)
     #print(scan.ping_scan(ip))
     #print(scan.tcp_scan(ip))
     #print(scan.udp_scan(ip))
