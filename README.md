@@ -17,7 +17,6 @@
     1.......MODULES
      1.0....NETWORK MAPPER
      1.1....PACKET CAPTURE AND ANALYSIS
-     1.2....AI COMPARISON
  
  
  
